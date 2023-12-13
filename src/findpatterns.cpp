@@ -1,14 +1,14 @@
 #include "findpatterns.h"
 
 #include <cassert>
+#include <future>
 #include <iostream>
 
 using VecConstIt = std::vector<std::string>::const_iterator;
 using VecConstRange = std::pair<VecConstIt, VecConstIt>;
 using VecConstRanges = std::vector<VecConstRange>;
 
-std::vector<std::string> FindPatternInRange(const VecConstRange & range,
-                                            mtfind::Pattern pattern)
+std::vector<std::string> FindPatternInRange(VecConstRange range, mtfind::Pattern pattern)
 {
     std::vector<std::string> res;
     for (VecConstIt it = range.first; it != range.second; ++it) {
@@ -42,12 +42,22 @@ void mtfind::FindPattern(const std::vector<std::string> &lines,
 {
     assert(threadCount != 0);
     if (lines.empty()) return;
+
     VecConstRanges ranges = LinesToRanges(lines, threadCount);
-    for (int i = 0; i < ranges.size(); i++) {
-        std::cout << "range " << i << " res: " << std::endl;
-        auto rangeRes = FindPatternInRange(ranges[i], pattern);
-        for (const auto & r : rangeRes) {
-            std::cout << r << std::endl;
-        }
+    assert(!ranges.empty());
+
+    std::vector<std::future<std::vector<std::string>>> futures;
+    for (const VecConstRange & range : ranges) {
+        futures.push_back(std::async(std::launch::async,
+                                     FindPatternInRange,
+                                     range, pattern));
+    }
+    std::vector<std::string> res;
+    for (auto & future : futures) {
+        auto futureRes = future.get();
+        res.insert(res.end(), futureRes.begin(), futureRes.end());
+    }
+    for (const auto & r : res) {
+        std::cout << r << " ";
     }
 }
