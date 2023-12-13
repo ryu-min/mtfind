@@ -18,6 +18,6 @@ int main()
     while (std::getline(fStream, line)) {
         lines.push_back(line);
     }
-    mtfind::SearchPattern(lines, mtfind::QuestionPattern, 4);
+    mtfind::FindPattern(lines, mtfind::QuestionPattern, 4);
     return 0;
 }

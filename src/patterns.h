@@ -1,10 +1,17 @@
 #pragma once
 
 #include <functional>
+#include <vector>
+#include <string>
 
 namespace mtfind
 {
-    using Pattern = std::function<void()>;
+    struct PatternMatch {
+        int index;
+        std::string result;
+    };
+    using Pattern = std::function<std::vector<PatternMatch>(const std::string &, const std::string &)>;
 
-    void QuestionPattern();
+    std::vector<PatternMatch> QuestionPattern(const std::string & line,
+                                              const std::string & pattern);
 }

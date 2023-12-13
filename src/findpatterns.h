@@ -13,8 +13,8 @@ namespace mtfind
      * @param pattern
      * @param threadCount
      */
-    void SearchPattern(const std::vector<std::string> & lines,
-                       Pattern pattern,
-                       size_t threadCount);
+    void FindPattern(const std::vector<std::string> & lines,
+                     Pattern pattern,
+                     size_t threadCount);
 }
 
