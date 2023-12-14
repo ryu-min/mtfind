@@ -2,12 +2,20 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <chrono>
 
 #include "findpatterns.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-    std::string filePath = "C:\\Users\\ryu-min\\dev\\mtfind\\test.txt";
+    if (argc != 3) {
+        std::cout << "Error: Incorrect number of parameters." << std::endl;
+        std::cout << "Usage: mtfind <file_path> <pattern>" << std::endl;
+        return -1;
+    }
+    std::string filePath = argv[1];
+    std::string pattern = argv[2];
+
     std::ifstream fStream(filePath);
     if (!fStream) {
         std::cout << "can't open file";
@@ -18,8 +26,7 @@ int main()
     while (std::getline(fStream, line)) {
         lines.push_back(line);
     }
-//    mtfind::QuestionPatternDetector("1", "mad");
-    auto matches = mtfind::FindPattern(lines, "?ad", mtfind::QuestionPatternDetector, 10);
+    auto matches = mtfind::FindPattern(lines, pattern, mtfind::QuestionPatternDetector, 8);
     std::cout << matches.size() << std::endl;
     for (const auto & match : matches) {
         std::cout << match.line << " "
