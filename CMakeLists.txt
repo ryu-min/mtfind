@@ -11,4 +11,6 @@ add_executable(mtfind
     src/patterns.cpp
     src/findpatterns.h
     src/findpatterns.cpp
+    src/utils.h
+    src/utils.cpp
 )

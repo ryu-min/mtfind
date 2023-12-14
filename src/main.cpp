@@ -1,10 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <chrono>
+#include <thread>
 
 #include "findpatterns.h"
+#include "utils.h"
 
 int main(int argc, char* argv[])
 {
@@ -16,17 +14,16 @@ int main(int argc, char* argv[])
     std::string filePath = argv[1];
     std::string pattern = argv[2];
 
-    std::ifstream fStream(filePath);
-    if (!fStream) {
-        std::cout << "can't open file";
-        return -1;
+    bool fileReaded = true;
+    std::vector<std::string> lines = mtfind::GetLinesFromFile(filePath, fileReaded);
+    if (!fileReaded) {
+        std::cout << "Error: Failed to access the file \""
+                  << filePath << "\"." << std::endl;
+        return -2;
     }
-    std::vector<std::string> lines;
-    std::string line;
-    while (std::getline(fStream, line)) {
-        lines.push_back(line);
-    }
-    auto matches = mtfind::FindPattern(lines, pattern, mtfind::QuestionPatternDetector, 8);
+
+    size_t threadCount = std::thread::hardware_concurrency();
+    auto matches = mtfind::FindPattern(lines, pattern, mtfind::QuestionPatternDetector, threadCount);
     std::cout << matches.size() << std::endl;
     for (const auto & match : matches) {
         std::cout << match.line << " "
