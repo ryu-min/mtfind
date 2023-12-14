@@ -7,12 +7,17 @@
 using VecConstIt = std::vector<std::string>::const_iterator;
 using VecConstRange = std::pair<VecConstIt, VecConstIt>;
 using VecConstRanges = std::vector<VecConstRange>;
+using RangeMatch = std::pair<VecConstIt, mtfind::DetectorMatch>;
 
-std::vector<std::string> FindPatternInRange(VecConstRange range, mtfind::Pattern pattern)
+std::vector<RangeMatch>
+FindPatternInRange(VecConstRange range, std::string pattern, mtfind::PatternDetector detector)
 {
-    std::vector<std::string> res;
+    std::vector<std::pair<VecConstIt, mtfind::DetectorMatch>> res;
     for (VecConstIt it = range.first; it != range.second; ++it) {
-        res.push_back(*it);
+        std::vector<mtfind::DetectorMatch> detectorMathces = detector(*it, pattern);
+        for (const mtfind::DetectorMatch & match : detectorMathces) {
+            res.emplace_back(it, match);
+        }
     }
     return res;
 }
@@ -27,7 +32,7 @@ VecConstRanges LinesToRanges(const std::vector<std::string> & lines,
     }
     VecConstRanges ranges;
     VecConstIt start = lines.begin();
-    for (int i = 0; i < threadCount - 1; i++) {
+    for (size_t i = 0; i < threadCount - 1; i++) {
         VecConstIt end = start + chunkSize;
         ranges.emplace_back(start, end);
         start = end;
@@ -36,28 +41,34 @@ VecConstRanges LinesToRanges(const std::vector<std::string> & lines,
     return ranges;
 }
 
-void mtfind::FindPattern(const std::vector<std::string> &lines,
-                         Pattern pattern,
-                         size_t threadCount)
+std::vector<mtfind::Match> mtfind::FindPattern(const std::vector<std::string> &lines,
+                                                          const std::string & pattern,
+                                                          PatternDetector detector,
+                                                          size_t threadCount)
 {
     assert(threadCount != 0);
-    if (lines.empty()) return;
+
+    std::vector<mtfind::Match> result;
+    if (lines.empty()) return result;
 
     VecConstRanges ranges = LinesToRanges(lines, threadCount);
     assert(!ranges.empty());
 
-    std::vector<std::future<std::vector<std::string>>> futures;
+    std::vector<std::future<std::vector<RangeMatch>>> futures;
     for (const VecConstRange & range : ranges) {
         futures.push_back(std::async(std::launch::async,
                                      FindPatternInRange,
-                                     range, pattern));
+                                     range, pattern, detector));
     }
-    std::vector<std::string> res;
     for (auto & future : futures) {
-        auto futureRes = future.get();
-        res.insert(res.end(), futureRes.begin(), futureRes.end());
+        auto matches = future.get();
+        for (const std::pair<VecConstIt, mtfind::DetectorMatch> & match : matches) {
+            result.push_back({
+                                 static_cast<size_t>(std::distance(lines.cbegin(), match.first)) + 1,
+                                 match.second.index,
+                                 match.second.result
+                             });
+        }
     }
-    for (const auto & r : res) {
-        std::cout << r << " ";
-    }
+    return result;
 }

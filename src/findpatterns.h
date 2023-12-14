@@ -7,14 +7,14 @@
 
 namespace mtfind
 {
-    /**
-     * @brief SearchPattern
-     * @param lines
-     * @param pattern
-     * @param threadCount
-     */
-    void FindPattern(const std::vector<std::string> & lines,
-                     Pattern pattern,
-                     size_t threadCount);
-}
+    struct Match {
+        size_t line;
+        size_t index;
+        std::string result;
+    };
 
+    std::vector<Match> FindPattern(const std::vector<std::string> & lines,
+                                   const std::string & pattern,
+                                   PatternDetector detector,
+                                   size_t threadCount);
+}

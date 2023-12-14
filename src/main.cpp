@@ -18,6 +18,13 @@ int main()
     while (std::getline(fStream, line)) {
         lines.push_back(line);
     }
-    mtfind::FindPattern(lines, mtfind::QuestionPattern, 10);
+//    mtfind::QuestionPatternDetector("1", "mad");
+    auto matches = mtfind::FindPattern(lines, "?ad", mtfind::QuestionPatternDetector, 10);
+    std::cout << matches.size() << std::endl;
+    for (const auto & match : matches) {
+        std::cout << match.line << " "
+                  << match.index << " "
+                  << match.result << std::endl;
+    }
     return 0;
 }

@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(mtfind
     src/main.cpp
+    src/patterns.h
     src/patterns.cpp
+    src/findpatterns.h
     src/findpatterns.cpp
-    )
-target_include_directories(mtfind PRIVATE src)
+)

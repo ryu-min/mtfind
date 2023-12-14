@@ -2,13 +2,13 @@
 #include <iostream>
 
 
-std::vector<mtfind::PatternMatch>
-mtfind::QuestionPattern(const std::string &line,
-                        const std::string &pattern)
+std::vector<mtfind::DetectorMatch>
+mtfind::QuestionPatternDetector(const std::string &line,
+                                const std::string &pattern)
 {
-    std::vector<PatternMatch> results;
-    size_t patternSize = pattern.size();
-    size_t lineSize = line.size();
+    std::vector<DetectorMatch> results;
+    int patternSize = pattern.size();
+    int lineSize = line.size();
     for (int i = 0; i <= lineSize - patternSize; i++) {
         bool match = true;
         for (int j = 0; j < patternSize; j++) {
@@ -18,8 +18,8 @@ mtfind::QuestionPattern(const std::string &line,
             }
         }
         if (match) {
-            PatternMatch match;
-            match.index = i;
+            DetectorMatch match;
+            match.index = i + 1;
             match.result = line.substr(i, patternSize);
             results.push_back(match);
             i += patternSize - 1;
