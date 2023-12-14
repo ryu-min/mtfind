@@ -7,7 +7,7 @@
 namespace mtfind
 {
     /**
-     * @brief The DetectorMatch struct - represents a match found by a pattern detector
+     * @brief The DetectorMatch struct - Represents a match found by a pattern detector
      */
     struct DetectorMatch {
         size_t index;
@@ -21,7 +21,7 @@ namespace mtfind
     using PatternDetector = std::function<std::vector<DetectorMatch>(const std::string &, const std::string &)>;
 
     /**
-     * @brief QuestionPatternDetector - implementation of a pattern detector
+     * @brief QuestionPatternDetector - Implementation of a pattern detector
      * The pattern can contain a "?" wildcard, which matches any single character
      * @param line - The line to search in
      * @param pattern - The pattern to search for
