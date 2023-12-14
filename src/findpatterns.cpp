@@ -42,9 +42,9 @@ VecConstRanges LinesToRanges(const std::vector<std::string> & lines,
 }
 
 std::vector<mtfind::Match> mtfind::FindPattern(const std::vector<std::string> &lines,
-                                                          const std::string & pattern,
-                                                          PatternDetector detector,
-                                                          size_t threadCount)
+                                               const std::string & pattern,
+                                               PatternDetector detector,
+                                               size_t threadCount)
 {
     assert(threadCount != 0);
 
